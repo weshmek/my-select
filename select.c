@@ -1,126 +1,118 @@
 #include "select.h"
-#include <stdlib.h>
 
 
 
-Array create_array(int *A, int length)
+static void swap(Array Arr, array_index i, array_index j)
 {
-	Array ret;
-	ret.length = length;
-	ret.A = A - 1;
-	return ret;
+	array_element tmp = Arr.A[i];
+	Arr.A[i] = Arr.A[j];
+	Arr.A[j] = tmp;
 }
 
-
-
-void swap(Array Arr, int i, int j)
+static void insert(Array Arr, array_index i)
 {
-	if (i != j)
+	while (i < Arr.length)
 	{
-		int *A = Arr.A;
-		int tmp = A[i];
-		A[i] = A[j];
-		A[j] = tmp;
-	}
-}
-
-
-void insert(Array Arr, int j)
-{
-	int *A = Arr.A;
-	int x = j;
-	while ((x <= Arr.length) && (A[x - 1] >= A[x]))
-	{
-		swap(Arr, x - 1, x);
-		x++;
-	}
-}	
-
-void insertion_sort(Array Arr)
-{
-	int i;
-	for (i = Arr.length - 1; i >= 1; i--)
-	{
-		insert(Arr, i + 1);
-	}
-
-}
-
-
-int partition(Array Arr, int pivot)
-{
-	int first = Arr.A[1];
-	int j;
-	int i;
-	for (i = 1; i <= Arr.length; i++)
-	{
-		if (Arr.A[i] == pivot)
+		if (Arr.A[i] >= Arr.A[i + 1])
 		{
-			swap(Arr, i, Arr.length);
+			swap(Arr, i, i + 1);
 		}
-	}
-	i = 0;
-	for (j = 1; j <= Arr.length - 1; j++)
-	{
-		if (Arr.A[j] < pivot)
+		else
 		{
-			i++;
+			break;
+		}
+		i++;
+	}
+}
+
+static void insertion_sort(Array Arr)
+{
+	array_index i;
+	for (i = Arr.length ; i > 0; i--)
+	{
+		insert(Arr, i);
+	}
+}
+
+
+
+static array_index partition(Array Arr, array_element pivot)
+{
+	array_index j = 2;
+	array_length i = 1;
+	while (Arr.A[i] != pivot)
+	{
+		i++;
+	}
+	swap(Arr, i, 1);
+	i = Arr.length;
+	do
+	{
+		if (Arr.A[i] < pivot) 
+		{
 			swap(Arr, i, j);
+			j++;	
 		}
-		if (Arr.A[j] == pivot)
+		else
 		{
-			Arr.A[j] = first;
-		}	
+			i--;
+		}
+	} while (i > j);
+	if (Arr.A[j] >= pivot)
+	{
+		j--;
 	}
-	swap(Arr, i + 1, Arr.length);
-	return i + 1;
+	swap(Arr, 1, j);
+	return j;
 }
 
-int select(Array Arr, int i)
+
+
+array_element select(Array Arr, array_index i)
 {
-	int m, n;
-	int x, k;
-	int five_array[5];
-	Array group_of_five;
-	int *Medians;
-	Array median_of_medians;
-	int sz = ((Arr.length + 4) / 5);
+	array_index k;
+	array_element x;
+	array_index s = i;
+	do
+	{
+		array_index j;
+		array_length sz;
+		Array medians;
+		if (Arr.length == 1)
+		{
+			return Arr.A[1];
+		}
+		i = s;
+		sz = (Arr.length % 5) ? (Arr.length / 5) + 1 : (Arr.length / 5);
 
-	if (Arr.length == 1)
-	{
-		return Arr.A[1];
-	}
-	
-	Medians = malloc(sz * sizeof(int));
-	
-	for(m = 0; m < sz; m++)
-	{
-
-		group_of_five = create_array(Arr.A + 5 * m + 1, (m == sz - 1) ? (Arr.length % 5) ? Arr.length % 5 : 5 : 5);
-		insertion_sort(group_of_five);
-		Medians[m] = group_of_five.A[(group_of_five.length + 1) / 2];
-	}
-	median_of_medians = create_array(Medians, sz);
-	x = select(median_of_medians, (sz + 1) / 2);
-	free(Medians);
-	k = partition(Arr, x);
-	if (k == i)
-	{
-		return x;
-	}
-	if (k > i)
-	{
-		Arr.length = k;
-		return select(Arr, i);
-	}
-	else
-	{
-		Arr.A = Arr.A + k;
-		Arr.length = Arr.length - k;
-		return select(Arr, i - k);
-	}
-}
-	
 		
+
+		for (j = 1; j <= sz; j++)
+		{
+			Array group_of_five;
+			group_of_five.A = Arr.A + 5 * (j - 1);
+			group_of_five.length = ((j == sz) && ((Arr.length % 5) != 0)) ? Arr.length % 5 : 5;
+			insertion_sort(group_of_five);
+			swap(Arr, j, (5 * (j - 1)) + (group_of_five.length / 2) + (group_of_five.length % 2));
+		}
+		medians.A = Arr.A;
+		medians.length = sz;
+					 
+		x = select(medians, medians.length >> 1);
 	
+		k = partition(Arr, x);
 	
+		if (k > i)
+		{
+			Arr.length = k;
+		}
+		else if (k < i)
+		{
+		
+			Arr.A = Arr.A + k;
+			Arr.length = Arr.length - k;
+			s = i - k;
+		}
+	}while (i != k); /*Tail-Call Optimization!*/
+	return x;
+}
