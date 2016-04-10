@@ -1,41 +1,26 @@
 #include "select.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
-
+	array_index i;
 	Array Arr;
-	array_length l;
-	array_element *A;
-	printf("%d\n", argc);
-	for (l = 1; l <= argc - 1; l++)
+	array_element A[10];
+	srand(getpid());
+	for (i = 0; i < sizeof(A) / sizeof(A[0]); i++)
 	{
-		printf("%s\n", argv[l]);
+		A[i] = (array_element) (rand() %100) / (array_element)(rand() % 100);
+		printf("%f ", A[i]);
 	}
-	A = malloc((argc - 1) * sizeof(array_element));
+	printf("\n");
 	Arr.A = A - 1;
-	Arr.length = argc - 1;
-	for (l = 1; l <= Arr.length; l++)
+	Arr.length = sizeof(A) / sizeof(A[0]);
+	for (i = 1; i <= Arr.length; i++)
 	{
-		Arr.A[l] = (array_element) atoi(argv[l]);
+		array_index k = my_select(Arr, i);
+		printf("%d: %f at %d\n", (int)i, Arr.A[k], (int)k);
 	}
-	for (l = 1; l <= Arr.length; l++)
-	{
-		printf("%f\t", Arr.A[l]);
-	}
-	printf("\n");
-	for (l = 1; l <= Arr.length; l++)
-	{
-		printf("%f\t", select(Arr, l));
-	}
-	printf("\n");
-	for (l = 1; l <= Arr.length; l++)
-	{
-		printf("%f\t", Arr.A[l]);
-	}
-	printf("\n");
-	free(A);
-	printf("\n");
-	
+	return 0;
 }
