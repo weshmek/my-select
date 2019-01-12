@@ -91,7 +91,7 @@ array_index my_select(Array Arr, array_index i)
 	/* tail-call helper value; carries over new value of i to next loop iteration so we can set the state like a recursive call */
 	array_index s = i;
 
-	/* keeps track of numberg of times we've "shifted" the array */
+	/* keeps track of number of times we've "shifted" the array */
 	array_index offset = 0; 
 	do
 	{
