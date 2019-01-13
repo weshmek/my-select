@@ -51,7 +51,7 @@ static array_index partition(Array Arr, array_index x)
 	 * Initial: j = 2, i = Arr.length, condition satisfied
 	 * Maintenance: A[i] < pivot: swap(i, j) 
 	 * 		=> A[j] < pivot
-	 *		   j++ => A[>i,<j] < pivot
+	 *		   j++ => A[>1,<j] < pivot
 	 *		A[i] >= pivot:	i--
 	 *		=> A[>i] >= pivot
 	 * Termination: i <= j
@@ -62,8 +62,7 @@ static array_index partition(Array Arr, array_index x)
 	{
 		if (Arr.A[i] < pivot)
 		{
-			swap(Arr, i, j);
-			j++;
+			swap(Arr, i, j++);
 		}
 		else
 		{
