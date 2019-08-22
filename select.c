@@ -152,9 +152,9 @@ array_index my_select(Array Arr, array_index i)
 			Arr.length = Arr.length - k;
 			s = i - k;
 		}
-		/*
-		 * Use tail-call optimization to "recursively" call select
-		 */
+	/*
+	 * Use tail-call optimization to "recursively" call select
+	 */
 	} while (i != k);
 	return k + offset;
 }

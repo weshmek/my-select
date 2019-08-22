@@ -1,10 +1,14 @@
 #ifndef __SELECT_H__
 #define __SELECT_H__
 
-typedef unsigned long array_index;
+#ifndef select_type
+#define select_type char
+#endif
+
+typedef unsigned int array_index;
 typedef array_index array_length;
 
-typedef float array_element;
+typedef select_type array_element;
 
 typedef struct {array_element *A; array_length length;} Array;
 
